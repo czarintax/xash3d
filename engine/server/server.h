@@ -499,7 +499,7 @@ extern	convar_t		*sv_fullupdate_penalty_time;
 // sv_main.c
 //
 void SV_FinalMessage( char *message, qboolean reconnect );
-void SV_DropClient( sv_client_t *drop );
+EXPORT void SV_DropClient( sv_client_t *drop );
 void SV_UpdateMovevars( qboolean initialize );
 int SV_CalcPacketLoss( sv_client_t *cl );
 void SV_ExecuteUserCommand (char *s);
