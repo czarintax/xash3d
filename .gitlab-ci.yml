@@ -36,7 +36,7 @@ linux_dedicated:
   - export CC="gcc -m32"
   - export CXX="gcc -m32"
   - cmake -DXASH_DOWNLOAD_DEPENDENCIES=yes -DXASH_SDL=OFF -DXASH_DEDICATED=ON -DXASH_STATIC=ON -DXASH_DLL_LOADER=ON -DXASH_VGUI=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo ../
-  - make -j2
+  - make -j$(nproc --all)
   artifacts:
     paths:
     - out2/engine/xash3d
@@ -62,7 +62,7 @@ linux_desktop:
   - cd $CI_PROJECT_DIR/SDL2-2.0.14/
   - export CC="gcc -msse2 -march=i686 -m32 -ggdb -O2"
   - ./configure --disable-dependency-tracking --enable-audio --enable-video --enable-events --disable-render --enable-joystick --disable-haptic --disable-power --enable-threads --enable-timers --enable-loadso --enable-video-opengl --enable-x11-shared --enable-video-x11 --enable-video-x11-xrandr --enable-video-x11-scrnsaver --enable-video-x11-xinput --disable-video-x11-xshape --disable-video-x11-xdbe --disable-libudev --disable-dbus --disable-ibus --enable-sdl-dlopen --disable-video-opengles --disable-cpuinfo --disable-assembly --disable-atomic --enable-alsa
-  - make -j2
+  - make -j$(nproc --all)
   - mkdir -p ../sdl2-linux
   - make install DESTDIR=$CI_PROJECT_DIR/sdl2-linux
   - cd ../
@@ -71,7 +71,7 @@ linux_desktop:
   - export CC="gcc -m32"
   - export CXX="gcc -m32"
   - cmake -DCMAKE_PREFIX_PATH=$CI_PROJECT_DIR/sdl2-linux/usr/local -DXASH_DOWNLOAD_DEPENDENCIES=yes -DXASH_STATIC=ON -DXASH_DLL_LOADER=ON -DXASH_VGUI=ON -DMAINUI_USE_STB=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo ../
-  - make -j2
+  - make -j$(nproc --all)
   - mkdir artifacts
   - cp ../scripts/xash3d.sh artifacts
   - cp engine/xash3d artifacts
@@ -93,7 +93,7 @@ android:
   - curl https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.8-bin.tar.xz | tar xJ
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:$PWD/apache-ant-1.10.8/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PWD/android-ndk
-  - sleep 3s; echo y | android update sdk -u --filter platform-tools,build-tools-20.0.0,android-21 --force --all > /dev/null
+  - sleep 3s; echo y | android update sdk -u --filter platform-tools,build-tools-21.1.2,android-21 --force --all > /dev/null
   - sed -e 's/1\.5/1\.6/g' -i $PWD/android-sdk-linux/tools/ant/build.xml
   - wget https://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip >/dev/null 2>/dev/null
   - 7z x ./android-ndk-r11c-linux-x86_64.zip > /dev/null
@@ -109,8 +109,7 @@ android:
   - export CCACHE_DIR="$PWD/ccache"
   - ccache --show-stats
   script:
-  - mkdir android
-  - cd android
+  - mkdir android && cd android
   - git clone --depth 1 https://github.com/tyabus/xash3d-android-project
   - cd xash3d-android-project
   - cp debug.keystore ~/.android/debug.keystore
@@ -119,7 +118,49 @@ android:
   - ln -s $CI_PROJECT_DIR jni/src/Xash3D/xash3d
   - bash ./gen-version.sh
   - python2 scripts/makepak.py xash-extras assets/extras.pak
-  - ndk-build -j2 APP_CFLAGS="-w" NDK_CCACHE=ccache
+  - ndk-build -j$(nproc --all) APP_CFLAGS="-w" NDK_CCACHE=ccache
+  - ln -s android/libs libs
+  - ant debug -Dtest.version=1
+  artifacts:
+    paths:
+    - android/xash3d-android-project/bin/xash3d-debug.apk
+
+android_64bit:
+  stage: android
+  before_script:
+  - dpkg --add-architecture i386
+  - apt update
+  - apt install -y curl wget cmake ccache p7zip-full gcc-multilib g++-multilib build-essential zlib1g:i386 libstdc++6:i386 openjdk-8-jdk xz-utils git python2.7 python-minimal
+  - curl -s http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz | tar xzf -
+  - curl https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.8-bin.tar.xz | tar xJ
+  - export ANDROID_HOME=$PWD/android-sdk-linux
+  - export PATH=${PATH}:$PWD/apache-ant-1.10.8/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PWD/android-ndk
+  - sleep 3s; echo y | android update sdk -u --filter platform-tools,build-tools-21.1.2,android-21 --force --all > /dev/null
+  - sed -e 's/1\.5/1\.6/g' -i $PWD/android-sdk-linux/tools/ant/build.xml
+  - wget https://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip >/dev/null 2>/dev/null
+  - 7z x ./android-ndk-r11c-linux-x86_64.zip > /dev/null
+  - mv android-ndk-r11c android-ndk
+  - mkdir -p ccache
+  - export PATH="/usr/lib/ccache:$PATH"
+  - export CCACHE_BASEDIR="$PWD"
+  - export CCACHE_DIR="$PWD/ccache"
+  - export CCACHE_COMPILERCHECK=content
+  - ccache --zero-stats || true
+  - ccache --show-stats || true
+  after_script:
+  - export CCACHE_DIR="$PWD/ccache"
+  - ccache --show-stats
+  script:
+  - mkdir android && cd android
+  - git clone --depth 1 https://github.com/tyabus/xash3d-android-project
+  - cd xash3d-android-project
+  - cp debug.keystore ~/.android/debug.keystore
+  - git submodule update --init jni/src/NanoGL/nanogl xash-extras
+  - git clone --depth 1 https://github.com/tyabus/hlsdk-xash3d jni/src/hlsdk-xash3d -b master
+  - ln -s $CI_PROJECT_DIR jni/src/Xash3D/xash3d
+  - bash ./gen-version.sh
+  - python2 scripts/makepak.py xash-extras assets/extras.pak
+  - NDK_TOOLCHAIN_VERSION=clang ndk-build -j$(nproc --all) XASH_64BIT="1" APP_CFLAGS="-w" NDK_CCACHE=ccache
   - ln -s android/libs libs
   - ant debug -Dtest.version=1
   artifacts:
@@ -153,7 +194,7 @@ coverity_scan:
   - cd $CI_PROJECT_DIR/SDL2-2.0.14/
   - export CC="gcc -msse2 -march=i686 -m32 -ggdb -O2"
   - ./configure --disable-dependency-tracking --enable-audio --enable-video --enable-events --disable-render --enable-joystick --disable-haptic --disable-power --enable-threads --enable-timers --enable-loadso --enable-video-opengl --enable-x11-shared --enable-video-x11 --enable-video-x11-xrandr --enable-video-x11-scrnsaver --enable-video-x11-xinput --disable-video-x11-xshape --disable-video-x11-xdbe --disable-libudev --disable-dbus --disable-ibus --enable-sdl-dlopen --disable-video-opengles --disable-cpuinfo --disable-assembly --disable-atomic --enable-alsa
-  - make -j2
+  - make -j$(nproc --all)
   - mkdir -p ../sdl2-linux
   - make install DESTDIR=$CI_PROJECT_DIR/sdl2-linux
   - cd ../
