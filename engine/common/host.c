@@ -62,7 +62,6 @@ convar_t	*host_xashds_hacks;
 convar_t	*con_gamemaps;
 convar_t	*download_types;
 convar_t	*build, *ver; // original xash3d info
-convar_t	*version; // fake
 convar_t	*host_build, *host_ver; // fork info
 convar_t	*host_mapdesign_fatal;
 convar_t 	*cmd_scripting = NULL;
