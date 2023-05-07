@@ -1255,7 +1255,7 @@ int EXPORT Host_Main( int argc, const char **argv, const char *progname, int bCh
 	con_gamemaps = Cvar_Get( "con_mapfilter", "1", CVAR_ARCHIVE, "when enabled, show only maps in game folder (no maps from base folder when running mod)" );
 	download_types = Cvar_Get( "download_types", "msec", CVAR_ARCHIVE, "list of types to download: Model, Sounds, Events, Custom" );
 	ver = Cvar_Get( "ver", "48/0.98.3366", CVAR_INIT, "shows an original engine version. left for compability reasons" );
-	sv_version = Cvar_Get( "sv_version", "1.1.2.7/Stdio,48,8684", CVAR_INIT, "" ); // whb
+	sv_version = Cvar_Get( "sv_version", "1.1.2.7/Stdio,48,8684", 0, "" ); // whb
 	host_build = Cvar_Get( "host_build", va("%i", Q_buildnum() ), CVAR_INIT, "returns current build number" );
 	host_ver = Cvar_Get( "host_ver", va("%i %s %s %s %s", Q_buildnum(), XASH_VERSION, Q_buildos(), Q_buildarch(), Q_buildcommit() ), CVAR_INIT, "detailed info about this build" );
 	host_mapdesign_fatal = Cvar_Get( "host_mapdesign_fatal", "1", CVAR_ARCHIVE, "make map design errors fatal" );
