@@ -1007,6 +1007,17 @@ void SV_Status_f( void )
 	Msg( "\n" );
 }
 
+================
+SV_Version_f
+================
+*/
+void SV_Version_f( void )
+{
+	Msg( "Protocol version 48\n");
+	Msg( "Exe version 1.1.2.7 (cstrike)\n");
+	Msg( "Exe build: 19:52:54 Aug  3 2020 (8684)\n");
+}
+
 /*
 ==================
 SV_ConSay_f
@@ -1394,6 +1405,7 @@ void SV_InitOperatorCommands( void )
 	Cmd_AddCommand( "heartbeat", SV_Heartbeat_f, "send a heartbeat to the master server" );
 	Cmd_AddCommand( "kick", SV_Kick_f, "kick a player off the server by number or name" );
 	Cmd_AddCommand( "status", SV_Status_f, "print server status information" );
+	Cmd_AddCommand( "version", SV_Version_f, "" ); // fake
 	Cmd_AddCommand( "serverinfo", SV_ServerInfo_f, "print server settings" );
 	Cmd_AddCommand( "localinfo", SV_LocalInfo_f, "print local info settings" );
 	Cmd_AddCommand( "clientinfo", SV_ClientInfo_f, "print user infostring (player num required)" );
