@@ -1007,6 +1007,7 @@ void SV_Status_f( void )
 	Msg( "\n" );
 }
 
+/*
 ================
 SV_Version_f
 ================
