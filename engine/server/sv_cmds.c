@@ -892,10 +892,10 @@ void SV_Kick_f( void )
 	clientId = SV_GetClientIDString( cl );
 
 	SV_DropClient( cl );
-
+	
 	if ( *param )
 	{
-		SV_BroadcastPrintf( PRINT_HIGH, "%s was kicked with message: \"%s\"\n", name, param );
+		SV_BroadcastPrintf( PRINT_HIGH, "%s was kicked\n", name );
 		Log_Printf( "Kick: \"%s<%i><%s><>\" was kicked by \"Console\" (message \"%s\")\n", name, userid, clientId, param );
 	}
 	else
