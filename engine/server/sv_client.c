@@ -128,7 +128,6 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 {
 	char *input_devices_str = Info_ValueForKey( useragent, "d" );
 	char *id = Info_ValueForKey( useragent, "i" );
-	char *os = Info_ValueForKey( useragent, "o" );
 
 	if( input_devices_str[0] )
 	{
@@ -139,19 +138,10 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable touch (touch_enable 0)\nto enjoy playing on our server\n" );
 			return false;
 		}
-		if( !sv_allow_mouse->integer )
+		if( !sv_allow_mouse->integer && ( input_devices & INPUT_DEVICE_MOUSE ) )
 		{
-			if( input_devices & INPUT_DEVICE_MOUSE )
-			{
-				Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable mouse (m_ignore 1)\nto enjoy playing on our server\n" );
-				return false;
-			}
-			
-			if( os != "Android")
-			{
-				Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\n^1Android only server.\n" );
-				return false;
-			}
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable mouse (m_ignore 1)\nto enjoy playing on our server\n" );
+			return false;
 		}
 		if( !sv_allow_joystick->integer && ( input_devices & INPUT_DEVICE_JOYSTICK ) )
 		{
