@@ -406,7 +406,7 @@ void SV_DirectConnect( netadr_t from )
 
 	if( !newcl )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "%s\nServer is full.\n", errorpacket );
+		Netchan_OutOfBandPrint( NS_SERVER, from, "%s\nServer is full.\nPlease try again!\n", errorpacket );
 		MsgDev( D_INFO, "SV_DirectConnect: rejected a connection.\n" );
 		Netchan_OutOfBandPrint( NS_SERVER, from, "disconnect\n" );
 		return;
