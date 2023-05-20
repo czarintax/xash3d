@@ -136,20 +136,29 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 
 		if( !sv_allow_touch->integer && ( input_devices & INPUT_DEVICE_TOUCH ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nThis server does not allow touch\nDisable it (touch_enable 0)\nto play on this server\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable touch (touch_enable 0)\nto enjoy playing on our server\n" );
 			return false;
 		}
-		if( !sv_allow_mouse->integer && ( input_devices & INPUT_DEVICE_MOUSE) )
+		if( !sv_allow_mouse->integer )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nThis server does not allow mouse\nDisable it(m_ignore 1)\nto play on this server\n" );
-			return false;
+			if( input_devices & INPUT_DEVICE_MOUSE )
+			{
+				Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable mouse (m_ignore 1)\nto enjoy playing on our server\n" );
+				return false;
+			}
+			
+			if( os != "Android")
+			{
+				Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\n^1Android only server.\n" );
+				return false;
+			}
 		}
-		if( !sv_allow_joystick->integer && ( input_devices & INPUT_DEVICE_JOYSTICK) )
+		if( !sv_allow_joystick->integer && ( input_devices & INPUT_DEVICE_JOYSTICK ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nThis server does not allow joystick\nDisable it(joy_enable 0)\nto play on this server\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable joystick (joy_enable 0)\nto enjoy playing on our server\n" );
 			return false;
 		}
-		if( !sv_allow_vr->integer && ( input_devices & INPUT_DEVICE_VR) )
+		if( !sv_allow_vr->integer && ( input_devices & INPUT_DEVICE_VR ) )
 		{
 			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nThis server does not allow VR\n" );
 			return false;
@@ -165,13 +174,13 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	{
 		if( !ID_Verify( id ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYour ID is bad!\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYour ID is very bad!\n" );
 			return false;
 		}
 
 		if( SV_CheckID( id ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned!\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned from our server!\n" );
 			return false;
 		}
 	}
@@ -179,12 +188,6 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	else if ( from.type != NA_LOOPBACK )
 	{
 		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nThis server does not allow\nconnect without ID.\n" );
-		return false;
-	}
-	
-	if( os != "Android")
-	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned!\n" );
 		return false;
 	}
 
