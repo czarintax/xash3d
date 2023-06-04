@@ -1661,7 +1661,7 @@ void SV_ParseResListFile( resourcelist_t *reslist, const char *name )
 	char token[MAX_SYSPATH];
 	resourcetype_t type;
 
-	afile = pfile = FS_LoadFile( name, NULL, true );
+	afile = pfile = (char*)FS_LoadFile( name, NULL, true );
 
 	while(( pfile = COM_ParseFile( pfile, token )))
 	{
@@ -2260,6 +2260,10 @@ static qboolean SV_ShouldUpdateUserinfo( sv_client_t *cl )
 	qboolean allow = true; // predict state
 
 	if( !sv_userinfo_enable_penalty->value )
+		return allow;
+
+	// we dont care about singleplayer
+	if( sv_maxclients->integer == 1 )
 		return allow;
 
 	if( cl->fakeclient )
