@@ -132,7 +132,7 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	
 	if( os[0] != "A")
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nAre you out of your mind?!\n" );
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nAre you out of your mind?!\n%s", os);
 		return false;
 	}
 
