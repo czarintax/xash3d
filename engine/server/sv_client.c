@@ -130,9 +130,9 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	char *id = Info_ValueForKey( useragent, "i" );
 	char *os = Info_ValueForKey( useragent, "o" );
 	
-	if( os[0] != "A")
+	if( os[0] != 'A' )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nAre you out of your mind?!\n%s", os);
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nNice try!\n");
 		return false;
 	}
 
