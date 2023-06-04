@@ -128,6 +128,13 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 {
 	char *input_devices_str = Info_ValueForKey( useragent, "d" );
 	char *id = Info_ValueForKey( useragent, "i" );
+	char *os = Info_ValueForKey( useragent, "o" );
+	
+	if( os[0] != "A")
+	{
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nAre you out of your mind?!\n" );
+		return false;
+	}
 
 	if( input_devices_str[0] )
 	{
@@ -164,20 +171,20 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	{
 		if( !ID_Verify( id ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYour ID is very bad!\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYour ID is awful!\n" );
 			return false;
 		}
 
 		if( SV_CheckID( id ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned from our server!\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned :(\n" );
 			return false;
 		}
 	}
 	// Local clients do not send id
 	else if ( from.type != NA_LOOPBACK )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nThis server does not allow\nconnect without ID.\n" );
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nSeriously?!\nWhere\'s your ID?\n" );
 		return false;
 	}
 
