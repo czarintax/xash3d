@@ -132,7 +132,7 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	
 	if( os[0] != 'A' )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nNice try!\n");
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nI can\'t let you in!\n");
 		return false;
 	}
 
