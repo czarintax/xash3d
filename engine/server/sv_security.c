@@ -49,10 +49,7 @@ char* get_data_from_url(char* url) {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
     
-    struct curl_slist *header = NULL;
-    curl_slist *header = curl_slist_append(NULL, "X-API-Key: WuCS7KQtyoRxbWDZ4zsSbjUdU4T");
-
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
+    		curl_slist_append(curl, "Authorization: MTgzNTA6bVZ2V3hNNGlkajJOa0ZjaDJjU2FiQUJ6SE9ySWxWdFY=");
     
 		res = curl_easy_perform(curl);
 
