@@ -106,7 +106,7 @@ void SV_GetChallenge( netadr_t from )
 	if( i == MAX_CHALLENGES )
 	{
 		// this is the first time this client has asked for a challenge
-		svs.challenges[oldest].challenge = ((uint)rand() << 16) ^ rand();
+		svs.challenges[oldest].challenge = ((uint32_t)rand() << 16) ^ rand();
 		svs.challenges[oldest].adr = from;
 		svs.challenges[oldest].time = host.realtime;
 		svs.challenges[oldest].connected = false;
@@ -426,7 +426,7 @@ gotnewcl:
 
 	if( id[0] )
 	{
-		sscanf( id, "%llx", &newcl->WonID );
+		sscanf( id, "%"PRIx64, &newcl->WonID );
 		Q_strncpy( cl->auth_id, id, sizeof( cl->auth_id ) );
 	}
 
@@ -816,7 +816,7 @@ const char *SV_GetClientIDString( sv_client_t *cl )
 	if( cl->authentication_method == 0 )
 	{
 		// probably some old compatibility code.
-		Q_snprintf( result, sizeof( result ), "%010llu", cl->WonID );
+		Q_snprintf( result, sizeof( result ), "%010"PRIu64, cl->WonID );
 	}
 	else if( cl->authentication_method == 2 )
 	{
@@ -834,7 +834,7 @@ const char *SV_GetClientIDString( sv_client_t *cl )
 		}
 		else
 		{
-			Q_snprintf( result, sizeof( result ), "VALVE_%010llu", cl->WonID );
+			Q_snprintf( result, sizeof( result ), "VALVE_%010"PRIu64, cl->WonID );
 		}
 	}
 	else Q_strncpy( result, "UNKNOWN", sizeof( result ));
@@ -2329,9 +2329,9 @@ static void SV_UserinfoChanged( sv_client_t *cl, const char *userinfo )
 
 	if( !userinfo || !userinfo[0] ) return; // ignored
 
-	if( !Info_IsValid( userinfo ) ) return; // ignored
-
 	if( !SV_ShouldUpdateUserinfo( cl )) return; // ignored
+
+	if ( !Info_IsValid( userinfo ) ) return; // ignored
 
 	Q_strncpy( cl->userinfo, userinfo, sizeof( cl->userinfo ));
 
