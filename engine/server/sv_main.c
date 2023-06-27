@@ -33,7 +33,6 @@ convar_t	*sv_pausable;
 convar_t	*sv_newunit;
 convar_t	*sv_wateramp;
 convar_t	*sv_timeout;				// seconds without any message
-convar_t        *sv_version;
 convar_t	*zombietime;			// seconds to sink messages after disconnect
 convar_t	*rcon_password;			// password for remote server commands
 convar_t	*sv_airaccelerate;
@@ -915,7 +914,6 @@ void SV_Init( void )
 	sv_newunit = Cvar_Get( "sv_newunit", "0", 0, "sets to 1 while new unit is loading" );
 	hostname = Cvar_Get( "hostname", "unnamed", CVAR_SERVERNOTIFY|CVAR_ARCHIVE, "host name" );
 	sv_timeout = Cvar_Get( "sv_timeout", "100", CVAR_SERVERNOTIFY, "connection timeout" );
-	sv_version = Cvar_Get( "sv_version", "1.1.2.7/Stdio,48,8196", CVAR_SERVERNOTIFY, "" );
 	zombietime = Cvar_Get( "zombietime", "2", CVAR_SERVERNOTIFY, "timeout for clients-zombie (who died but not respawned)" );
 	sv_pausable = Cvar_Get( "pausable", "1", CVAR_SERVERNOTIFY, "allow players to pause or not" );
 	sv_allow_studio_attachment_angles = Cvar_Get( "sv_allow_studio_attachment_angles", "0", CVAR_ARCHIVE, "enable calc angles for attachment points (on studio models)" );
