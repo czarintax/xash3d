@@ -923,7 +923,7 @@ The second parameter should be the current protocol version number.
 */
 void SV_Info( netadr_t from, int version )
 {
-	char	string[MAX_INFO_STRING];
+	char	string[512];
 	int		count, bots;
 	char	*gamedir = GI->gamefolder;
 	qboolean havePassword = false;
