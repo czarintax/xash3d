@@ -936,7 +936,7 @@ void SV_Info( netadr_t from, int version )
 
 	if( version != PROTOCOL_VERSION && version != PROTOCOL_VERSION+1 )
 	{
-		Q_snprintf( string, sizeof( string ), "%s: wrong version\n", hostname->string );
+		Q_snprintf( string, sizeof( string ), "%s^7: wrong version\n", hostname->string );
 	}
 	else
 	{
