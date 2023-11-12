@@ -288,7 +288,6 @@ void SV_ActivateServer( void )
 		return;
 
 	// custom muzzleflashes
-	pfnPrecacheModel( "sprites/muzzleflash.spr" );
 	pfnPrecacheModel( "sprites/muzzleflash1.spr" );
 	pfnPrecacheModel( "sprites/muzzleflash2.spr" );
 	pfnPrecacheModel( "sprites/muzzleflash3.spr" );
@@ -725,8 +724,8 @@ void SV_InitGame( void )
 	{
 		// setup all the clients
 		ent = EDICT_NUM( i + 1 );
-		SV_InitEdict( ent );
 		svs.clients[i].edict = ent;
+		SV_InitEdict( ent );
 	}
 
 	// get actual movevars
