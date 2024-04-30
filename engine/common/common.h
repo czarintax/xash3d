@@ -245,6 +245,7 @@ extern convar_t	*scr_download;
 extern convar_t	*cl_allow_levelshots;
 extern convar_t	*mod_allow_materials;
 extern convar_t	*host_limitlocal;
+extern convar_t	*host_developer;
 extern convar_t	*host_maxfps;
 extern convar_t *net_qport;
 extern convar_t *download_types;
@@ -433,8 +434,6 @@ typedef struct host_parm_s
 #else
 	void *hWnd;
 #endif
-	int		developer;	// show all developer's message
-	int		old_developer;	// keep real dev state (we need enable dev-mode in multiplayer)
 	qboolean		key_overstrike;	// key overstrike mode
 	qboolean		stuffcmdsrun;	// execute stuff commands
 	qboolean		con_showalways;	// show console always (developer and dedicated)
@@ -562,8 +561,12 @@ void NET_SendPacket( netsrc_t sock, size_t length, const void *data, netadr_t to
 void NET_InitMasters();
 void NET_SaveMasters();
 void NET_ClearMasters();
+void NET_MasterShutdown();
+void NET_MasterHeartbeat();
+void NET_ForceHeartbeat();
+qboolean NET_GetMaster( netadr_t from, uint32_t *challenge, double *last_heartbeat );
 qboolean NET_SendToMasters( netsrc_t sock, size_t len, const void *data );
-qboolean NET_IsFromMasters(netadr_t adr);
+qboolean NET_IsFromMasters( netadr_t adr );
 
 
 /*
@@ -644,7 +647,7 @@ typedef enum
 	IMAGE_ROUND	= BIT(19),	// round image to nearest Pow2
 	IMAGE_RESAMPLE	= BIT(20),	// resample image to specified dims
 	IMAGE_PALTO24	= BIT(21),	// turn 32-bit palette into 24-bit mode (only for indexed images)
-	IMAGE_ROUNDFILLER	= BIT(22),	// round image to Pow2 and fill unused entries with single color	
+	// BIT(21) Reserved
 	IMAGE_FORCE_RGBA	= BIT(23),	// force image to RGBA buffer
 	IMAGE_MAKE_LUMA	= BIT(24),	// create luma texture from indexed
 	IMAGE_QUANTIZE	= BIT(25),	// make indexed image from 24 or 32- bit image
