@@ -931,7 +931,7 @@ void SV_Init( void )
 	sv_fullupdate_penalty_multiplier = Cvar_Get( "sv_fullupdate_penalty_multiplier", "2", CVAR_ARCHIVE, "penalty time multiplier" );
 	sv_fullupdate_penalty_time = Cvar_Get( "sv_fullupdate_penalty_time", "1", CVAR_ARCHIVE, "inital penalty time" );
 
-	sv_speedhack_kick = Cvar_Get( "sv_speedhack_kick", "1", CVAR_ARCHIVE, "enable automatic kicking of players who speedhack" );
+	sv_speedhack_kick = Cvar_Get( "sv_speedhack_kick", "0", CVAR_ARCHIVE, "enable automatic kicking of players who speedhack" );
 	sv_speedhack_warns = Cvar_Get( "sv_speedhack_warns", "8", CVAR_ARCHIVE, "maximum number of warnings before kicking for speedhack" );
 
 	sv_master_verbose_heartbeats = Cvar_Get( "sv_master_verbose_heartbeats", "0", 0, "print every heartbeat to console" );
