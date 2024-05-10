@@ -103,11 +103,15 @@ extern "C" {
 
 #define Mod_AllowMaterials()	( mod_allow_materials != NULL && mod_allow_materials->integer && !( host.features & ENGINE_DISABLE_HDTEXTURES ))
 
-#ifdef XASH_FORCEINLINE
-#define xash_force_inline _inline
+#if defined( XASH_FORCEINLINE )
+#if defined( _MSC_VER )
+#define xash_force_inline static __forceinline
+#elif (__GNUC__)
+#define xash_force_inline static inline __attribute__(( always_inline ))
 #else
-#define xash_force_inline
+#define xash_force_inline static inline
 #endif
+#endif // XASH_FORCE_INLINE
 
 #if defined __i386__ &&  defined __GNUC__
 #define GAME_EXPORT __attribute__((force_align_arg_pointer))
@@ -122,11 +126,11 @@ extern "C" {
 #define bswap16(x) __builtin_bswap16((x))
 #define bswap32(x) __builtin_bswap32((x))
 #else
-_inline uint16_t bswap16(uint16_t x)
+static inline uint16_t bswap16( uint16_t x )
 {
 	return ((( x  >> 8 ) & 0xffu ) | (( x  & 0xffu ) << 8 ));
 }
-_inline uint32_t bswap32(uint32_t x)
+static inline uint32_t bswap32( uint32_t x )
 {
 	return ((( x & 0xff000000u ) >> 24 ) | (( x & 0x00ff0000u ) >> 8  ) | (( x & 0x0000ff00u ) << 8  ) | (( x & 0x000000ffu ) << 24 ));
 }
@@ -137,7 +141,7 @@ _inline uint32_t bswap32(uint32_t x)
 #define LittleLongSW(x) (x = LittleLong(x))
 #define LittleShort(x) ((short)bswap16(x))
 #define LittleShortSW(x) (x = LittleShort(x))
-_inline float LittleFloat( float f )
+static inline float LittleFloat( float f )
 {
 	uint32_t i = *(uint32_t *)&f;
 	i = bswap32(i);

@@ -18,6 +18,13 @@ GNU General Public License for more details.
 #include <android/log.h>
 #endif
 
+// Don't enable colorized console on win32 and mobile devices
+#if !defined( _WIN32 ) && !defined( XASH_MOBILE_PLATFORM )
+#define COLORIZE_CONSOLE 1
+#else
+#define COLORIZE_CONSOLE 0
+#endif
+
 #ifdef USE_SELECT
 // non-blocking console input
 #include <sys/select.h>
@@ -174,7 +181,7 @@ void Sys_PrintLog( const char *pMsg )
 	if( !lastchar || lastchar == '\n')
 		strftime( logtime, sizeof( logtime ), "[%H:%M:%S] ", crt_tm ); //short time
 
-#ifdef COLORIZE_CONSOLE
+#if COLORIZE_CONSOLE == 1
 	{
 		char colored[4096];
 		const char *msg = pMsg;
