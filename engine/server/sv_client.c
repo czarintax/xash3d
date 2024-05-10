@@ -1090,6 +1090,9 @@ void SV_RemoteCommand( netadr_t from, sizebuf_t *msg )
 	static char	outputbuf[2048];
 	int		i;
 
+	if( !rcon_password->string[0] )
+		return;
+
 	MsgDev( D_INFO, "Rcon from %s:\n%s\n", NET_AdrToString( from ), BF_GetData( msg ) + 4 );
 	SV_BeginRedirect( from, RD_PACKET, outputbuf, sizeof( outputbuf ), SV_FlushRedirect );
 
