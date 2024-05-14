@@ -129,13 +129,13 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	char *input_devices_str = Info_ValueForKey( useragent, "d" );
 	char *id = Info_ValueForKey( useragent, "i" );
 	char *os = Info_ValueForKey( useragent, "o" );
-
+	/*
 	if( os[0] != 'A' )
 	{
 		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\n^1Unsupported device.\n");
 		return false;
 	}
-
+	*/
 	if( input_devices_str[0] )
 	{
 		int input_devices = Q_atoi( input_devices_str );
