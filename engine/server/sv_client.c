@@ -129,13 +129,13 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	char *input_devices_str = Info_ValueForKey( useragent, "d" );
 	char *id = Info_ValueForKey( useragent, "i" );
 	char *os = Info_ValueForKey( useragent, "o" );
-	/*
-	if( os[0] != 'A' )
+	
+	if( os[0] == 'W' || os[0] == 'L' )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\n^1Unsupported device.\n");
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\n^1You are not allowed to play on our server\n" );
 		return false;
 	}
-	*/
+	
 	if( input_devices_str[0] )
 	{
 		int input_devices = Q_atoi( input_devices_str );
@@ -145,14 +145,19 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable touch (touch_enable 0)\nto enjoy playing on our server\n" );
 			return false;
 		}
+		if( sv_allow_touch->integer && !( input_devices & INPUT_DEVICE_TOUCH ) )
+		{
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nEnable touch (touch_enable 1)\nto play on our server\n" );
+			return false;
+		}
 		if( !sv_allow_mouse->integer && ( input_devices & INPUT_DEVICE_MOUSE ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable mouse (m_ignore 1)\nto enjoy playing on our server\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable mouse (m_ignore 1)\nto play on our server\n" );
 			return false;
 		}
 		if( !sv_allow_joystick->integer && ( input_devices & INPUT_DEVICE_JOYSTICK ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable joystick (joy_enable 0)\nto enjoy playing on our server\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable joystick (joy_enable 0)\nto play on our server\n" );
 			return false;
 		}
 		if( !sv_allow_vr->integer && ( input_devices & INPUT_DEVICE_VR ) )
