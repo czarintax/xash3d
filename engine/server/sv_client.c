@@ -140,7 +140,7 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	{
 		int input_devices = Q_atoi( input_devices_str );
 
-		if( sv_allow_touch->integer && ( input_devices |= INPUT_DEVICE_MOUSE ) )
+		if( sv_allow_touch->integer && ( input_devices && INPUT_DEVICE_MOUSE ) )
 		{
 			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nEnable touch (touch_enable 1)\nto play on our server\n" );
 			return false;
