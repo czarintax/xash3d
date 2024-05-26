@@ -1163,7 +1163,6 @@ void SV_RunCmd( sv_client_t *cl, usercmd_t *ucmd, int random_seed )
 			{
 				SV_ClientPrintf( cl, PRINT_HIGH, "SPEEDHACK DETECTED!\n" );
 				SV_DropClient( cl );
-				continue;
 			}
 		}
 
