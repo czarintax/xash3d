@@ -1161,8 +1161,9 @@ void SV_RunCmd( sv_client_t *cl, usercmd_t *ucmd, int random_seed )
 			// automatically kick player
 			if( sv_speedhack_kick->value && cl->speedhack_warns > sv_speedhack_warns->value )
 			{
-				SV_ClientPrintf( cl, PRINT_HIGH, "Speedhacking is not allowed on this server!\n" );
+				SV_ClientPrintf( cl, PRINT_HIGH, "SPEEDHACK DETECTED!\n" );
 				SV_DropClient( cl );
+				return;
 			}
 		}
 
