@@ -1162,8 +1162,7 @@ void SV_RunCmd( sv_client_t *cl, usercmd_t *ucmd, int random_seed )
 			if( sv_speedhack_kick->value && cl->speedhack_warns > sv_speedhack_warns->value )
 			{
 				SV_ClientPrintf( cl, PRINT_HIGH, "SPEEDHACK DETECTED!\n" );
-				SV_DropClient( cl );
-				return;
+				//SV_DropClient( cl );
 			}
 		}
 
