@@ -130,9 +130,9 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	char *id = Info_ValueForKey( useragent, "i" );
 	char *os = Info_ValueForKey( useragent, "o" );
 	
-	if( os[0] == 'W' || os[0] == 'L' )
+	if( os[0] == 'W' || os[0] == 'w' ||  os[0] == 'L' || os[0] == 'l' )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are not allowed to play on our server\n" );
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nOnly mobile players are allowed to play on our server!\n" );
 		return false;
 	}
 	
@@ -142,7 +142,7 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 
 		if( !sv_allow_touch->integer && ( input_devices & INPUT_DEVICE_TOUCH ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable touch (touch_enable 0)\nto enjoy playing on our server\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nDisable touch (touch_enable 0)\nto play on our server\n" );
 			return false;
 		}
 		if( !sv_allow_mouse->integer && ( input_devices & INPUT_DEVICE_MOUSE ) )
@@ -171,20 +171,20 @@ qboolean SV_ProcessUserAgent( netadr_t from, char *useragent )
 	{
 		if( !ID_Verify( id ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYour ID is awful!\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nBad XashID!\n" );
 			return false;
 		}
 
 		if( SV_CheckID( id ) )
 		{
-			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned :(\n" );
+			Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nYou are banned!\n" );
 			return false;
 		}
 	}
 	// Local clients do not send id
 	else if ( from.type != NA_LOOPBACK )
 	{
-		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nSeriously?!\nWhere\'s your ID?\n" );
+		Netchan_OutOfBandPrint( NS_SERVER, from, "errormsg\nNo XashID!\n" );
 		return false;
 	}
 
