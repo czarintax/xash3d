@@ -519,6 +519,13 @@ void CL_ReadDemoUserCmd( qboolean discard )
 	FS_Read( cls.demofile, &bytes, sizeof( short ));
 	FS_Read( cls.demofile, data, bytes );
 
+	if( bytes >= sizeof( data ) )
+	{
+		MsgDev( D_ERROR, "too large dem_usercmd (size %u seq %i)\n", bytes, outgoing_sequence );
+		CL_DemoAborted();
+		return;
+	}
+
 	if( !discard )
 	{
 		usercmd_t	nullcmd;
@@ -1154,7 +1161,6 @@ void CL_PlayDemo_f( void )
 	string	filename;
 	string	demoname;
 	int	i;
-	delta_info_t *dt; // funny hack
 
 	if( Cmd_Argc() != 2 )
 	{
@@ -1254,13 +1260,6 @@ void CL_PlayDemo_f( void )
 	cls.demoplayback = true;
 	cls.state = ca_connected;
 	cl.background = (cls.demonum != -1) ? true : false;
-
-	// funny hack
-	dt = Delta_FindStruct( "movevars_t" );
-	if( !dt || !dt->bInitialized )
-	{
-		Delta_Init();
-	}
 
 	demo.starttime = CL_GetDemoPlaybackClock(); // for determining whether to read another message
 

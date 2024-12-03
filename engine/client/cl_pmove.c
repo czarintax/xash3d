@@ -320,28 +320,27 @@ pmove must be setup with world and solid entity hulls before calling
 */
 void GAME_EXPORT CL_SetSolidPlayers( int playernum )
 {
-	int		       j;
 	cl_entity_t	   *ent;
 	entity_state_t *state;
 	physent_t      *pe;
+	int		i;
 
 	if( !cl_solid_players->integer )
 		return;
 
-	for( j = 0; j < cl.maxclients; j++ )
+	for( i = 0; i < cl.maxclients; i++ )
 	{
 		// the player object never gets added
-		if( j == playernum )
+		if( i == playernum )
 			continue;
 
-		ent = CL_GetEntityByIndex( j + 1 );
+		ent = CL_GetEntityByIndex( i + 1 );
 
 		if( !ent || !ent->player )
 			continue; // not present this frame
 
-
 		// came from SetUpPlayerPrediction
-		state = cl.frames[cl.parsecountmod].playerstate + j;
+		state = cl.frames[cl.parsecountmod].playerstate + i;
 
 		if( ent->curstate.messagenum != cl.parsecount )
 			continue; // not present this frame [2]
@@ -354,6 +353,9 @@ void GAME_EXPORT CL_SetSolidPlayers( int playernum )
 
 		if( !state->solid )
 			continue; // not solid
+
+		if( !state->movetype )
+			continue; // dead
 
 		pe = &clgame.pmove->physents[clgame.pmove->numphysent];
 		if( CL_CopyEntityToPhysEnt( pe, ent ))
@@ -1141,10 +1143,7 @@ void CL_PredictMovement( void )
 	if( cls.state != ca_active ) return;
 
 	if( cls.demoplayback && cl.refdef.cmd != NULL )
-	{
-		// restore viewangles from cmd.angles
-		VectorCopy( cl.refdef.cmd->viewangles, cl.refdef.cl_viewangles );
-	}
+		CL_DemoInterpolateAngles();
 	
 	CL_SetUpPlayerPrediction( false, false );
 

@@ -402,6 +402,97 @@ CLIENT MOVEMENT COMMUNICATION
 =======================================================================
 */
 /*
+===============
+CL_ProcessShowTexturesCmds
+
+navigate around texture atlas
+===============
+*/
+qboolean CL_ProcessShowTexturesCmds( usercmd_t *cmd )
+{
+	static int oldbuttons;
+	int changed;
+	int pressed, released;
+
+	if ( !gl_showtextures->integer || gl_overview->integer )
+		return false;
+
+	changed  = ( oldbuttons ^ cmd->buttons );
+	pressed  = changed & cmd->buttons;
+	released = changed & ( ~cmd->buttons );
+
+	if ( released & ( IN_RIGHT | IN_MOVERIGHT ) )
+		Cvar_SetFloat( "r_showtextures", gl_showtextures->integer + 1 );
+	if ( released & ( IN_LEFT | IN_MOVELEFT ) )
+		Cvar_SetFloat( "r_showtextures", max( 1, gl_showtextures->integer - 1 ) );
+	oldbuttons = cmd->buttons;
+
+	return true;
+}
+
+/*
+===============
+CL_ProcessOverviewCmds
+
+Transform user movement into overview adjust
+===============
+*/
+qboolean CL_ProcessOverviewCmds( usercmd_t *cmd )
+{
+	ref_overview_t *ov = &clgame.overView;
+	int sign           = 1;
+	float size         = world.size[!ov->rotated] / world.size[ov->rotated];
+	float step         = ( 2.0f / size ) * host.realframetime;
+	float step2        = step * 100.0f * ( 2.0f / ov->flZoom );
+
+	if ( !gl_overview->integer || gl_showtextures->integer )
+		return false;
+
+	if ( ov->flZoom < 0.0f )
+		sign = -1;
+
+	if ( cmd->upmove > 0.0f )
+		ov->zNear += step;
+	else if ( cmd->upmove < 0.0f )
+		ov->zNear -= step;
+
+	if ( cmd->buttons & IN_JUMP )
+		ov->zFar += step;
+	else if ( cmd->buttons & IN_DUCK )
+		ov->zFar -= step;
+
+	if ( cmd->buttons & IN_FORWARD )
+		ov->origin[ov->rotated] -= sign * step2;
+	else if ( cmd->buttons & IN_BACK )
+		ov->origin[ov->rotated] += sign * step2;
+
+	if ( ov->rotated )
+	{
+		if ( cmd->buttons & ( IN_RIGHT | IN_MOVERIGHT ) )
+			ov->origin[0] -= sign * step2;
+		else if ( cmd->buttons & ( IN_LEFT | IN_MOVELEFT ) )
+			ov->origin[0] += sign * step2;
+	}
+	else
+	{
+		if ( cmd->buttons & ( IN_RIGHT | IN_MOVERIGHT ) )
+			ov->origin[1] += sign * step2;
+		else if ( cmd->buttons & ( IN_LEFT | IN_MOVELEFT ) )
+			ov->origin[1] -= sign * step2;
+	}
+
+	if ( cmd->buttons & IN_ATTACK )
+		ov->flZoom += step;
+	else if ( cmd->buttons & IN_ATTACK2 )
+		ov->flZoom -= step;
+
+	if ( ov->flZoom == 0.0f )
+		ov->flZoom = 0.0001f; // to prevent disivion by zero
+
+	return true;
+}
+
+/*
 =================
 CL_CreateCmd
 =================
@@ -413,6 +504,7 @@ void CL_CreateCmd( void )
 	color24		color;
 	vec3_t		angles;
 	qboolean		active;
+	int		input_override = 0;
 	int		i, ms;
 
 	ms = host.frametime * 1000;
@@ -490,10 +582,10 @@ void CL_CreateCmd( void )
 	pcmd->cmd.msec = ms;
 	CL_ComputeClientInterpAmount( &pcmd->cmd );
 
-	V_ProcessOverviewCmds( &pcmd->cmd );
-	V_ProcessShowTexturesCmds( &pcmd->cmd );
+	input_override |= CL_ProcessOverviewCmds( &pcmd->cmd );
+	input_override |= CL_ProcessShowTexturesCmds( &pcmd->cmd );
 
-	if(( cl.background && !cls.demoplayback ) || gl_overview->integer || cls.changelevel )
+	if(( cl.background && !cls.demoplayback ) || input_override || cls.changelevel )
 	{
 		VectorCopy( angles, cl.refdef.cl_viewangles );
 		VectorCopy( angles, pcmd->cmd.viewangles );
@@ -590,7 +682,7 @@ void CL_WritePacket( void )
 		if(( host.realtime - cls.netchan.last_received ) > CONNECTION_PROBLEM_TIME )
 		{
 			Con_NPrintf( 1, "^3Warning:^1 Connection Problem^7\n");
-			Con_NPrintf( 2, "Timing out in: ^1%1.1f^7\n", (float)cl_timeout->value - (float)host.realtime - (float)cls.netchan.last_received );
+			Con_NPrintf( 2, "Timing out in: ^1%1.1f^7\n", cl_timeout->value - ( host.realtime - cls.netchan.last_received ) );
 			cl.validsequence = 0;
 		}
 	}
@@ -1038,7 +1130,7 @@ void CL_Rcon_f( void )
 		Q_strncat( message, "\" ", sizeof( message ) );
 	}
 
-	if( cls.state >= ca_connected )
+	if( cls.state >= ca_connected && !Q_strlen( rcon_address->string ) )
 	{
 		to = cls.netchan.remote_address;
 	}
@@ -1108,11 +1200,6 @@ void CL_ClearState( void )
 	// tyabus: disable this for now
 	//host.developer = host.old_developer;
 
-	if( !SV_Active() && !CL_IsPlaybackDemo() && !cls.demorecording )
-	{
-		Delta_Shutdown();
-		Delta_InitClient();
-	}
 	HTTP_ClearCustomServers();
 }
 
@@ -1828,7 +1915,7 @@ void CL_ConnectionlessPacket( netadr_t from, sizebuf_t *msg )
 		// print command from connecting server or rcon_address
 		char *str;
 
-		if( !CL_IsFromConnectingServer( from ) || !Q_strcmp( NET_AdrToString( from ), rcon_address->string ) )
+		if( !CL_IsFromConnectingServer( from ) && Q_strcmp( NET_BaseAdrToString( from ), rcon_address->string ) )
 			return;
 
 		str = BF_ReadString( msg );
@@ -2026,6 +2113,10 @@ void CL_ReadNetMessage( void )
 
 void CL_ReadPackets( void )
 {
+	// demo time
+	if ( cls.demorecording && !cls.demowaiting )
+		cls.demotime += host.frametime;
+
 	CL_ReadNetMessage();
 
 	cl.lerpFrac = CL_LerpPoint();
@@ -2253,6 +2344,7 @@ void CL_InitLocal( void )
 
 	Cvar_Get( "skin", "", CVAR_USERINFO, "player skin" ); // XDM 3.3 want this cvar
 	Cvar_Get( "cl_background", "0", CVAR_READ_ONLY, "indicates that background map is running" );
+	Cvar_Get( "cl_msglevel", "0", CVAR_USERINFO|CVAR_ARCHIVE, "message filter for server notifications" );
 
 	Cvar_Get( "cl_enable_compress", "0", CVAR_ARCHIVE, "request huffman compression from server" );
 	Cvar_Get( "cl_enable_split", "1", CVAR_ARCHIVE, "request packet split from server" );
@@ -2329,6 +2421,10 @@ void CL_InitLocal( void )
 
 	Cmd_AddCommand ("precache", CL_Precache_f, "precache specified resource (by index)" );
 	Cmd_AddCommand ( "trysaveconfig", CL_TrySaveConfig_f, "schedule config save on disconnected state" );
+
+	// these two added to shut up HL25 update about 'unknown' commands
+	Cmd_AddCommand ( "richpresence_gamemode", Cmd_Null_f, "compatibility command, does nothing" );
+	Cmd_AddCommand ( "richpresence_update", Cmd_Null_f, "compatibility command, does nothing" );
 }
 
 //============================================================================
@@ -2455,7 +2551,6 @@ void CL_Init( void )
 	if( Host_IsDedicated() )
 		return; // nothing running on the client
 
-	Con_Init();
 	CL_InitLocal();
 
 	R_Init();	// init renderer
