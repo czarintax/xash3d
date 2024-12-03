@@ -497,6 +497,7 @@ extern	convar_t		*sv_fullupdate_penalty_time;
 extern	convar_t		*sv_speedhack_kick;
 extern	convar_t		*sv_speedhack_warns;
 extern	convar_t		*sv_master_verbose_heartbeats;
+extern	convar_t		*sv_redirect;
 extern	convar_t		*sv_redirect_ip;
 
 //===========================================================
