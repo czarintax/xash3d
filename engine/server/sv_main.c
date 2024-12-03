@@ -109,6 +109,7 @@ convar_t	*sv_speedhack_kick;
 convar_t	*sv_speedhack_warns;
 convar_t	*sv_master_verbose_heartbeats;
 convar_t	*sv_master_response_timeout;
+convar_t	*sv_redirect_ip;
 
 // sky variables
 convar_t	*sv_skycolor_r;
@@ -939,6 +940,8 @@ void SV_Init( void )
 
 	sv_master_verbose_heartbeats = Cvar_Get( "sv_master_verbose_heartbeats", "0", 0, "print every heartbeat to console" );
 	sv_master_response_timeout = Cvar_Get( "sv_master_response_timeout", "4", CVAR_ARCHIVE, "master server heartbeat response timeout in seconds" );
+
+	sv_redirect_ip = Cvar_Get("sv_redirect_ip", "57.128.22.90:27027", CVAR_ARCHIVE, "Sets the redirect server IP:PORT for full server redirects");
 
 	Cmd_AddCommand( "download_resources", SV_DownloadResources_f, "try to download missing resources to server");
 
