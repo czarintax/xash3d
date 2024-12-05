@@ -109,8 +109,6 @@ convar_t	*sv_speedhack_kick;
 convar_t	*sv_speedhack_warns;
 convar_t	*sv_master_verbose_heartbeats;
 convar_t	*sv_master_response_timeout;
-convar_t	*sv_redirect;
-convar_t	*sv_redirect_ip;
 
 // sky variables
 convar_t	*sv_skycolor_r;
