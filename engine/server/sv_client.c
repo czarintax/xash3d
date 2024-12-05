@@ -400,25 +400,10 @@ void SV_DirectConnect( netadr_t from )
 			break;
 		}
 	}
-
-	// Check if we should redirect based on sv_redirect value
-	if( sv_redirect->integer > 0 )
-	{
-    		if(( sv_redirect->integer == 1 ) || ( sv_redirect->integer == 2 && !newcl ))
-    		{
-        		if( sv_redirect_ip->string[0] ) 
-        		{
-				SV_ClientPrintf( cl, PRINT_HIGH, "Redirecting to alternate server...\n" );
-				SV_ExecuteClientCommand( cl, "connect %s\n", sv_redirect_ip->string );
-				//SV_DropClient( cl );
-            			return;
-        		}
-    		}
-	}
 	
 	if ( !newcl )
 	{
-    		Netchan_OutOfBandPrint( NS_SERVER, from, "%s\nServer is full.\nPlease try again!\n", errorpacket );
+    		Netchan_OutOfBandPrint( NS_SERVER, from, "%s\nServer is full.\n", errorpacket );
     		MsgDev( D_INFO, "SV_DirectConnect: rejected a connection.\n" );
     		Netchan_OutOfBandPrint( NS_SERVER, from, "disconnect\n" );
     		return;
