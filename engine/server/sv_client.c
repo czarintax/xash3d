@@ -408,7 +408,6 @@ void SV_DirectConnect( netadr_t from )
     		{
         		if( sv_redirect_ip->string[0] ) 
         		{
-				MsgDev( D_INFO, "SV_DirectConnect: redirecting connection to %s\n", sv_redirect_ip->string );
 				SV_ClientPrintf( cl, PRINT_HIGH, "Redirecting to alternate server...\n" );
 				SV_ExecuteClientCommand( cl, "connect %s\n", sv_redirect_ip->string );
 				//SV_DropClient( cl );
