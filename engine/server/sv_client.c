@@ -409,7 +409,7 @@ void SV_DirectConnect( netadr_t from )
         		if( sv_redirect_ip->string[0] ) 
         		{
             			Netchan_OutOfBandPrint( NS_SERVER, from, "%s\nRedirecting to alternate server...\n", errorpacket );
-            			Netchan_OutOfBandPrint( NS_SERVER, from, "connect %s\n", sv_redirect_ip->string );
+            			Netchan_OutOfBandPrint( NS_SERVER, from, "disconnect;connect %s\n", sv_redirect_ip->string );
             			MsgDev( D_INFO, "SV_DirectConnect: redirecting connection to %s\n", sv_redirect_ip->string );
             			return;
         		}
